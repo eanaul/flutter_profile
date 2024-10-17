@@ -1,108 +1,103 @@
 import 'package:flutter/material.dart';
+import 'home.dart';
 
-class Page2 extends StatelessWidget {
-  const Page2({super.key});
+class Login extends StatelessWidget {
+  Login({super.key});
+
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _roleController = TextEditingController();
+  final TextEditingController _sekolahController = TextEditingController();
+  final TextEditingController _descController = TextEditingController();
+
+  bool validateInputs(BuildContext context) {
+    if (_nameController.text.isEmpty || 
+        _roleController.text.isEmpty || 
+        _sekolahController.text.isEmpty || 
+        _descController.text.isEmpty) {
+      // Tampilkan pesan error
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Semua kolom harus diisi")),
+      );
+      return false;
+    }
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("About & Skills"),
+        title: const Text('Login Form'),
         backgroundColor: Colors.blueAccent,
-        elevation: 0,
       ),
       body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
+        padding: const EdgeInsets.all(20.0),
+        width: double.infinity,
+        height: double.infinity,
         decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage("assets/images/bg.jpg"),
             fit: BoxFit.cover,
           ),
         ),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
+        child: Center(
+          child: SingleChildScrollView(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                // About Section
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.9,
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                    color: const Color.fromRGBO(255, 255, 255, 0.9),
-                    elevation: 10,
-                    shadowColor: Colors.black.withOpacity(0.5),
-                    child: const Padding(
-                      padding: EdgeInsets.all(20.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "About Me",
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            'Im a software engineer',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black54,
-                            ),
-                            textAlign: TextAlign.justify,
-                          ),
-                        ],
-                      ),
-                    ),
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Silahkan Masukkan Data',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
+                const SizedBox(height: 20),
+                
+                buildInputField(
+                    controller: _nameController, label: 'Nama'),
+                const SizedBox(height: 10),
 
-                const SizedBox(height: 20),  // Memberi jarak antar container
+                buildInputField(
+                    controller: _roleController, label: 'Role'),
+                const SizedBox(height: 10),
 
-                // Skills Section
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.9,
-                  child: Card(
+                buildInputField(
+                    controller: _sekolahController, label: 'Sekolah'),
+                const SizedBox(height: 10),
+
+                buildInputField(
+                    controller: _descController, label: 'Deskripsi Singkat'),
+                const SizedBox(height: 20),
+
+                ElevatedButton(
+                  onPressed: () {
+                    if (validateInputs(context)) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Home(
+                            name: _nameController.text,
+                            role: _roleController.text,
+                            sekolah: _sekolahController.text,
+                            desc: _descController.text,
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueAccent,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 50, vertical: 15),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    color: const Color.fromRGBO(255, 255, 255, 0.9),
-                    elevation: 10,
-                    shadowColor: Colors.black.withOpacity(0.5),
-                    child: const Padding(
-                      padding: EdgeInsets.all(20.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Skills",
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          
-                          // Skill List
-                           Text(
-                            'Springboot & Laravel',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black54,
-                            ),
-                            textAlign: TextAlign.justify,
-                          ),
-                        ],
-                      ),
-                    ),
+                  ),
+                  child: const Text(
+                    'Kirim',
+                    style: TextStyle(fontSize: 16),
                   ),
                 ),
               ],
@@ -113,17 +108,21 @@ class Page2 extends StatelessWidget {
     );
   }
 
-  // Function to create skill items with consistent styling
-  Widget skillItem(String skill) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5.0),
-      child: Text(
-        skill,
-        style: const TextStyle(
-          fontSize: 16,
-          color: Colors.black87,
+  TextField buildInputField(
+      {required TextEditingController controller, required String label}) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: const TextStyle(color: Colors.white),
+        filled: true,
+        fillColor: Colors.black54,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide.none,
         ),
       ),
+      style: const TextStyle(color: Colors.white),
     );
   }
 }
